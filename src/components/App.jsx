@@ -2,27 +2,33 @@ import Sections from './Sections/Sections';
 import Statistics from './Statistics/Statistics';
 import FeedbackOptions from './FeedbackOptions/FeedbackOptions';
 import NoFeedback from './NoFeedback/NoFeedback';
-import { Component } from 'react';
+import React, { useState } from 'react';
 
-class App extends Component {
-  state = {
-    good: 0,
-    neutral: 0,
-    bad: 0,
+const App = () => {
+  const [good, setGood] = useState(0);
+  const [neutral, setNeutral] = useState(0);
+  const [bad, setBad] = useState(0);
+
+  const increment = btn => {
+    if (btn === 'good') {
+      setGood(good + 1);
+    }
+
+    if (btn === 'neutral') {
+      setNeutral(neutral + 1);
+    }
+
+    if (btn === 'bad') {
+      setBad(bad + 1);
+    }
   };
 
-  increment = btn => {
-    this.setState(prevState => ({ [btn]: prevState[btn] + 1 }));
-  };
-
-  countTotalFeedback = () => {
-    const { good, neutral, bad } = this.state;
+  const countTotalFeedback = () => {
     return good + neutral + bad;
   };
 
-  countPositiveFeedbackPercentage = () => {
-    const { good } = this.state;
-    const goodPercentage = (good * 100) / this.countTotalFeedback();
+  const countPositiveFeedbackPercentage = () => {
+    const goodPercentage = (good * 100) / countTotalFeedback();
 
     if (isNaN(goodPercentage)) {
       return 'For the moment there is no statistics';
@@ -30,44 +36,39 @@ class App extends Component {
     return goodPercentage.toFixed(1);
   };
 
-  render() {
-    return (
-      <div
-        style={{
-          height: '100vh',
-          display: 'flex',
-          flexDirection: 'column',
-          justifyContent: 'center',
-          alignItems: 'center',
-          fontSize: 40,
-          color: '#010101',
-        }}
-      >
-        <Sections
-          title="Please leave feedback"
-          sectionClassName="feedbackTitle"
-        >
-          <FeedbackOptions
-            options={['good', 'neutral', 'bad']}
-            onLeaveFeedback={this.increment}
+  return (
+    <div
+      style={{
+        height: '100vh',
+        display: 'flex',
+        flexDirection: 'column',
+        justifyContent: 'center',
+        alignItems: 'center',
+        fontSize: 40,
+        color: '#010101',
+      }}
+    >
+      <Sections title="Please leave feedback" sectionClassName="feedbackTitle">
+        <FeedbackOptions
+          options={['good', 'neutral', 'bad']}
+          onLeaveFeedback={increment}
+        />
+      </Sections>
+      <Sections title="Statistics" sectionClassName="statisticsTitle">
+        {countTotalFeedback() === 0 ? (
+          <NoFeedback />
+        ) : (
+          <Statistics
+            good={good}
+            neutral={neutral}
+            bad={bad}
+            total={countTotalFeedback()}
+            positivePercentage={countPositiveFeedbackPercentage()}
           />
-        </Sections>
-        <Sections title="Statistics" sectionClassName="statisticsTitle">
-          {this.countTotalFeedback() === 0 ? (
-            <NoFeedback />
-          ) : (
-            <Statistics
-              good={this.state.good}
-              neutral={this.state.neutral}
-              bad={this.state.bad}
-              total={this.countTotalFeedback()}
-              positivePercentage={this.countPositiveFeedbackPercentage()}
-            />
-          )}
-        </Sections>
-      </div>
-    );
-  }
-}
+        )}
+      </Sections>
+    </div>
+  );
+};
 
 export default App;
