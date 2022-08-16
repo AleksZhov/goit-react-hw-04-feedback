@@ -5,30 +5,19 @@ import NoFeedback from './NoFeedback/NoFeedback';
 import React, { useState } from 'react';
 
 const App = () => {
-  const [good, setGood] = useState(0);
-  const [neutral, setNeutral] = useState(0);
-  const [bad, setBad] = useState(0);
+  const [options, setOptions] = useState({ good: 0, neutral: 0, bad: 0 });
 
   const increment = btn => {
-    if (btn === 'good') {
-      setGood(good + 1);
-    }
-
-    if (btn === 'neutral') {
-      setNeutral(neutral + 1);
-    }
-
-    if (btn === 'bad') {
-      setBad(bad + 1);
-    }
+    setOptions(prevState => ({ ...prevState, [btn]: prevState[btn] + 1 }));
   };
 
   const countTotalFeedback = () => {
+    const { good, neutral, bad } = options;
     return good + neutral + bad;
   };
 
   const countPositiveFeedbackPercentage = () => {
-    const goodPercentage = (good * 100) / countTotalFeedback();
+    const goodPercentage = (options.good * 100) / countTotalFeedback();
 
     if (isNaN(goodPercentage)) {
       return 'For the moment there is no statistics';
@@ -59,9 +48,9 @@ const App = () => {
           <NoFeedback />
         ) : (
           <Statistics
-            good={good}
-            neutral={neutral}
-            bad={bad}
+            good={options.good}
+            neutral={options.neutral}
+            bad={options.bad}
             total={countTotalFeedback()}
             positivePercentage={countPositiveFeedbackPercentage()}
           />
